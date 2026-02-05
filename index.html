@@ -4,10 +4,36 @@
         <meta charset="UTF-8">
         <title>Valentines' Day</title>
         <link rel="stylesheet" href="style.css"/>
-    </head>
-    <body>
-        <header>
-            <h1>valentines day</h1>
-        </header>
-    </body>
+        <style>
+            #moveBtn {
+      position: absolute;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: left 0.25s ease, top 0.25s ease;
+    }
+  </style>
+</head>
+<body>
+
+<button id="moveBtn">Try to click me 😏</button>
+
+<script>
+  const btn = document.getElementById("moveBtn");
+
+  btn.addEventListener("mouseenter", moveButton);
+
+  function moveButton() {
+    const maxX = window.innerWidth - btn.offsetWidth;
+    const maxY = window.innerHeight - btn.offsetHeight;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+
+    btn.style.left = randomX + "px";
+    btn.style.top = randomY + "px";
+  }
+</script>
+
+</body>
 </html>
