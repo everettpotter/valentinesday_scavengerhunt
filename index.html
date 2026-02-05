@@ -5,23 +5,49 @@
         <title>Valentines' Day</title>
         <link rel="stylesheet" href="style.css"/>
         <style>
-            #moveBtn {
+    body {
+      height: 100vh;
+      margin: 0;
+    }
+
+    #escapeBtn {
       position: absolute;
-      padding: 12px 20px;
+      padding: 14px 22px;
       font-size: 16px;
       cursor: pointer;
-      transition: left 0.25s ease, top 0.25s ease;
+      transition: left 0.15s linear, top 0.15s linear;
     }
   </style>
 </head>
 <body>
 
-<button id="moveBtn">Try to click me 😏</button>
+<button id="escapeBtn">You can't click me 😈</button>
 
 <script>
-  const btn = document.getElementById("moveBtn");
+  const btn = document.getElementById("escapeBtn");
 
-  btn.addEventListener("mouseenter", moveButton);
+  // initial position
+  btn.style.left = "200px";
+  btn.style.top = "200px";
+
+  document.addEventListener("mousemove", (e) => {
+    const btnRect = btn.getBoundingClientRect();
+
+    const btnX = btnRect.left + btnRect.width / 2;
+    const btnY = btnRect.top + btnRect.height / 2;
+
+    const dx = e.clientX - btnX;
+    const dy = e.clientY - btnY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // how close the cursor can get before it escapes
+    const dangerRadius = 120;
+
+    if (distance < dangerRadius) {
+      moveButton();
+    }
+  });
 
   function moveButton() {
     const maxX = window.innerWidth - btn.offsetWidth;
