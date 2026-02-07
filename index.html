@@ -1,65 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Valentines' Day</title>
-        <link rel="stylesheet" href="style.css"/>
-        <style>
-    body {
-      height: 100vh;
-      margin: 0;
-    }
-
-    #escapeBtn {
-      position: absolute;
-      padding: 14px 22px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: left 0.15s linear, top 0.15s linear;
-    }
-  </style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💘 Valentine Scavenger Hunt</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<button id="escapeBtn">You can't click me 😈</button>
+  <main class="card">
+    <!-- Photos -->
+    <div class="photo-row">
+      <img src="images/pic1.jpg" alt="Us 💕" />
+      <img src="images/pic2.jpg" alt="Us again 💕" />
+    </div>
 
-<script>
-  const btn = document.getElementById("escapeBtn");
+    <!-- Text -->
+    <h1>You’ve been handpicked 💖</h1>
+    <p class="message">
+      You’ve been handpicked out of <strong>7 billion people</strong><br />
+      to embark on this scavenger hunt.
+    </p>
+    <p class="message">
+      Are you ready?
+    </p>
 
-  // initial position
-  btn.style.left = "200px";
-  btn.style.top = "200px";
+    <!-- Buttons -->
+    <div class="btn-row">
+      <button class="btn yes" onclick="window.location.href='valentine/'">
+        Yes 💘
+      </button>
 
-  document.addEventListener("mousemove", (e) => {
-    const btnRect = btn.getBoundingClientRect();
+      <button id="noBtn" class="btn no">
+        No 🙃
+      </button>
+    </div>
+  </main>
 
-    const btnX = btnRect.left + btnRect.width / 2;
-    const btnY = btnRect.top + btnRect.height / 2;
+  <!-- Optional: make "No" run away -->
+  <script>
+    const noBtn = document.getElementById("noBtn");
 
-    const dx = e.clientX - btnX;
-    const dy = e.clientY - btnY;
+    noBtn.addEventListener("mouseenter", () => {
+      const maxX = window.innerWidth - noBtn.offsetWidth;
+      const maxY = window.innerHeight - noBtn.offsetHeight;
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // how close the cursor can get before it escapes
-    const dangerRadius = 120;
-
-    if (distance < dangerRadius) {
-      moveButton();
-    }
-  });
-
-  function moveButton() {
-    const maxX = window.innerWidth - btn.offsetWidth;
-    const maxY = window.innerHeight - btn.offsetHeight;
-
-    const randomX = Math.random() * maxX;
-    const randomY = Math.random() * maxY;
-
-    btn.style.left = randomX + "px";
-    btn.style.top = randomY + "px";
-  }
-</script>
+      noBtn.style.position = "absolute";
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top = Math.random() * maxY + "px";
+    });
+  </script>
 
 </body>
 </html>
