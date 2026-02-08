@@ -17,7 +17,7 @@
     </div>
 
     <!-- Text -->
-    <h1>You’ve been handpicked 💖</h1>
+    <h1>Lover's Lane Scavenger Hunt 2026</h1>
     <p class="message">
       You’ve been handpicked out of <strong>7 billion people</strong><br />
       to embark on this scavenger hunt.
@@ -29,28 +29,52 @@
     <!-- Buttons -->
     <div class="btn-row">
       <button class="btn yes" onclick="window.location.href='valentine/'">
-        Yes 💘
+        Yes
       </button>
 
       <button id="noBtn" class="btn no">
-        No 🙃
+        No
       </button>
     </div>
   </main>
 
-  <!-- Optional: make "No" run away -->
+  <!-- Turn the No button into Yes -->
   <script>
-    const noBtn = document.getElementById("noBtn");
+  const noBtn = document.getElementById("noBtn");
+  let converted = false;
 
-    noBtn.addEventListener("mouseenter", () => {
-      const maxX = window.innerWidth - noBtn.offsetWidth;
-      const maxY = window.innerHeight - noBtn.offsetHeight;
+  document.addEventListener("mousemove", (e) => {
+    if (converted) return;
 
-      noBtn.style.position = "absolute";
-      noBtn.style.left = Math.random() * maxX + "px";
-      noBtn.style.top = Math.random() * maxY + "px";
-    });
-  </script>
+    const rect = noBtn.getBoundingClientRect();
+    const btnX = rect.left + rect.width / 2;
+    const btnY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - btnX;
+    const dy = e.clientY - btnY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // how close before it gives up
+    const triggerDistance = 120;
+
+    if (distance < triggerDistance) {
+      convertToYes();
+    }
+  });
+
+  function convertToYes() {
+    converted = true;
+
+    noBtn.textContent = "Yes 💘";
+    noBtn.classList.remove("no");
+    noBtn.classList.add("yes");
+
+    noBtn.onclick = () => {
+      window.location.href = "valentine/";
+    };
+  }
+</script>
+
 
 </body>
 </html>
