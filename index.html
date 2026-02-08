@@ -32,7 +32,7 @@
         Yes
       </button>
 
-      <button id="noBtn" class="btn no">
+      <button id="toggleBtn" class="btn no">
         No
       </button>
     </div>
@@ -65,7 +65,7 @@
 
   function toYes() {
     isYes = true;
-    btn.textContent = "Yes 💘";
+    btn.textContent = "Yes";
     btn.classList.remove("no");
     btn.classList.add("yes");
     btn.onclick = () => window.location.href = "valentine/";
