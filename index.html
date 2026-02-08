@@ -40,40 +40,46 @@
 
   <!-- Turn the No button into Yes -->
   <script>
-  const noBtn = document.getElementById("noBtn");
-  let converted = false;
+  const btn = document.getElementById("toggleBtn");
+
+  const triggerDistance = 120; // how close before it turns to Yes
+  let isYes = false;
 
   document.addEventListener("mousemove", (e) => {
-    if (converted) return;
+    const rect = btn.getBoundingClientRect();
 
-    const rect = noBtn.getBoundingClientRect();
     const btnX = rect.left + rect.width / 2;
     const btnY = rect.top + rect.height / 2;
 
     const dx = e.clientX - btnX;
     const dy = e.clientY - btnY;
+
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // how close before it gives up
-    const triggerDistance = 120;
-
-    if (distance < triggerDistance) {
-      convertToYes();
+    if (distance < triggerDistance && !isYes) {
+      toYes();
+    } else if (distance >= triggerDistance && isYes) {
+      toNo();
     }
   });
 
-  function convertToYes() {
-    converted = true;
+  function toYes() {
+    isYes = true;
+    btn.textContent = "Yes 💘";
+    btn.classList.remove("no");
+    btn.classList.add("yes");
+    btn.onclick = () => window.location.href = "valentine/";
+  }
 
-    noBtn.textContent = "Yes 💘";
-    noBtn.classList.remove("no");
-    noBtn.classList.add("yes");
-
-    noBtn.onclick = () => {
-      window.location.href = "valentine/";
-    };
+  function toNo() {
+    isYes = false;
+    btn.textContent = "No 🙃";
+    btn.classList.remove("yes");
+    btn.classList.add("no");
+    btn.onclick = null;
   }
 </script>
+
 
 
 </body>
