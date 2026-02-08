@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clue 2</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body class="clue2">
+
+  <main class="card">
+    <h1>Clue #2</h1>
+    <div class="photo-row clue2-photos">
+        <img src="../images/bama.jpeg" alt="Us">
+        <img src="../images/cigar.jpeg" alt="Together">
+    </div>
+
+    <p class="sub">A little love math… but mostly love :)</p>
+
+    <div class="riddle">
+      <p>
+        Not how many times I’ve fallen for you,<br>
+        But how long this love has stayed true.<br>
+        Count the years our story’s been told<br>
+        What number does our love now hold?
+      </p>
+    </div>
+
+    <div class="answer">
+      <input
+        id="answerInput"
+        type="number"
+        inputmode="numeric"
+        min="0"
+        step="1"
+        placeholder="Enter the number…"
+      />
+      <button class="btn yes" id="submitBtn">Submit</button>
+    </div>
+
+    <p id="feedback" class="tiny" style="min-height: 1.2em;"></p>
+
+    <div class="btn-row" style="margin-top: 14px;">
+      <button class="btn no" type="button" onclick="window.location.href='../clue1/'">
+        ← Back
+      </button>
+
+      <button class="btn yes" id="nextBtn" type="button" style="display:none;">
+        Next ➜
+      </button>
+    </div>
+  </main>
+
+  <script>
+    const correct = "2";
+    const input = document.getElementById("answerInput");
+    const submit = document.getElementById("submitBtn");
+    const feedback = document.getElementById("feedback");
+    const nextBtn = document.getElementById("nextBtn");
+    function animateHearts(sourceBtn) {
+    // pop animation restart (uses .popped in CSS)
+    sourceBtn.classList.remove("popped");
+    void sourceBtn.offsetWidth;
+    sourceBtn.classList.add("popped");
+
+    // hearts burst (uses .heart + floatUp in CSS)
+    for (let i = 0; i < 14; i++) spawnHeartFrom(sourceBtn);
+    }
+
+    function spawnHeartFrom(el) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = Math.random() > 0.5 ? "💖" : "💘";
+
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+
+    heart.style.left = (x + (Math.random() - 0.5) * 140) + "px";
+    heart.style.top  = (y + (Math.random() - 0.5) * 60) + "px";
+
+    document.body.appendChild(heart);
+    heart.addEventListener("animationend", () => heart.remove());
+    }
+
+    function animateHeartsAndGo(sourceBtn, url) {
+        animateHearts(sourceBtn);
+        setTimeout(() => {
+            window.location.href = url;
+            }, 650);
+    }
+
+    function checkAnswer() {
+      const guess = (input.value || "").trim();
+
+      if (!guess) {
+        feedback.textContent = "Nice try hottie, but you gotta make a guess";
+        return;
+      }
+
+      if (guess === correct) {
+        feedback.textContent = "YEEEAAAAHHH BABY!!! TWO WHOLE YEARS!!!! i love you!! <3 Two years and still my favorite person.";
+        nextBtn.style.display = "inline-block";
+        submit.disabled = true;
+        input.disabled = true;
+        animateHearts(submit);
+      } else {
+        feedback.textContent = "Not quite, Try again cutie.";
+        input.select();
+      }
+    }
+
+    submit.addEventListener("click", checkAnswer);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") checkAnswer();
+    });
+
+    nextBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        animateHeartsAndGo(nextBtn, "../clue3/");
+    });
+
+  </script>
+
+</body>
+</html>

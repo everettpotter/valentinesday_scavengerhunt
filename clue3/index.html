@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Stop!</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body class="clue3">
+  <main class="card">
+    <h1 class="big">YOU MADE IT TO THE END</h1>
+    <p class="sub">Now for the big question…</p>
+
+    <div class="drumroll">
+      <div class="roll-text">DRUM ROLL PLEASE</div>
+      <div class="dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="meter-wrap" aria-label="Countdown">
+      <div id="meter" class="meter"></div>
+    </div>
+
+    <p id="countText" class="message" style="margin-top: 12px;">Loading the moment…</p>
+
+    <div class="btn-row" style="margin-top: 18px;">
+      <button class="btn no" type="button" onclick="window.location.href='../clue2/'">← Back</button>
+
+      <button id="readyBtn" class="btn yes" type="button" style="display:none;">
+        I’m ready
+      </button>
+    </div>
+
+    <p class="tiny" style="margin-top: 14px;">(No pressure… but also… all the pressure in the world)</p>
+  </main>
+
+  <script>
+    const readyBtn = document.getElementById("readyBtn");
+    const meter = document.getElementById("meter");
+    const countText = document.getElementById("countText");
+
+    const nextUrl = "../final/"; 
+
+    // Fun little countdown
+    const steps = ["3…", "2…", "1…", "wait im nervous, i hope this works", "OKAY OKAY", "LOCK IN", "HERE IT COMES!!!", "BRACE YOURSELF", "wait does this actually work?", "oh god please work", "please don't tell me I airballed this..", "oh no this is taking so long, how embarrassing", "LOL LIKE AIRBALLING IS IN MY BAG", "LOOK ALIVE BIG SEXY BOOBER"];
+    let i = 0;
+
+    // Animate meter over ~3 seconds
+    let progress = 0;
+    const totalMs = 36500;
+    const tickMs = 50;
+    const increment = 100 / (totalMs / tickMs);
+
+    const meterTimer = setInterval(() => {
+      progress = Math.min(100, progress + increment);
+      meter.style.width = progress + "%";
+      if (progress >= 100) clearInterval(meterTimer);
+    }, tickMs);
+
+    // Text countdown
+    const textTimer = setInterval(() => {
+      countText.textContent = steps[i] || "💘";
+      i++;
+      if (i > steps.length) {
+        clearInterval(textTimer);
+        unlock();
+      }
+    }, 2500);
+
+    function unlock() {
+      countText.textContent = "The time is NOW! Are you ready??";
+      readyBtn.style.display = "inline-block";
+    }
+
+    // Hearts when clicking the final “ready” button
+    readyBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      animateHeartsAndGo(readyBtn, nextUrl);
+    });
+
+    function animateHeartsAndGo(sourceBtn, url) {
+      sourceBtn.classList.remove("popped");
+      void sourceBtn.offsetWidth;
+      sourceBtn.classList.add("popped");
+
+      for (let k = 0; k < 18; k++) spawnHeartFrom(sourceBtn);
+
+      setTimeout(() => {
+        window.location.href = url;
+      }, 650);
+    }
+
+    function spawnHeartFrom(el) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = Math.random() > 0.5 ? "💖" : "💘";
+
+      const r = el.getBoundingClientRect();
+      const x = r.left + r.width / 2;
+      const y = r.top + r.height / 2;
+
+      heart.style.left = (x + (Math.random() - 0.5) * 160) + "px";
+      heart.style.top  = (y + (Math.random() - 0.5) * 70) + "px";
+
+      document.body.appendChild(heart);
+      heart.addEventListener("animationend", () => heart.remove());
+    }
+  </script>
+</body>
+</html>

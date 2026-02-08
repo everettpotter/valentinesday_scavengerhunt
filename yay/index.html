@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LFG</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    #fx {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .card { position: relative; z-index: 1; }
+  </style>
+</head>
+
+<body class="yay">
+  <canvas id="fx"></canvas>
+
+  <main class="card">
+    <h1 class="big">LETS GOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!!</h1>
+    <div class="photo-row clue2-photos">
+        <img src="../images/dunk.jpg" alt="Us">
+        <img src="../images/date.jpeg" alt="Together">
+        <img src="../images/race.jpeg" alt="Together">
+    </div>
+    <p class="message">
+      HAPPY VALENTINE’S DAY 💖<br />
+      You just made me the happiest person ever.
+      I'm so thankful to have you in my life, and I can't wait to make more memories together.
+    </p>
+    <p class="message">
+      I love you so much!!!
+    </p>
+
+    <div class="btn-row" style="margin-top: 18px;">
+      <button class="btn yes" onclick="window.location.href='../'">Replay</button>
+    </div>
+
+    <p class="tiny" style="margin-top: 10px;">(tap/click anywhere for more fireworks)</p>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+
+    let W = 0, H = 0, DPR = 1;
+
+    function resize() {
+      DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); // cap for perf
+      W = canvas.width = Math.floor(window.innerWidth * DPR);
+      H = canvas.height = Math.floor(window.innerHeight * DPR);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    // ---------- Firework system ----------
+    const rockets = [];
+    const sparks = [];
+
+    const GRAVITY = 0.09;
+    const DRAG = 0.992;
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+    // launch a rocket that explodes at some height
+    function launch(x = rand(0, window.innerWidth), targetY = rand(window.innerHeight * 0.15, window.innerHeight * 0.45)) {
+      rockets.push({
+        x,
+        y: window.innerHeight + 10,
+        vx: rand(-1.2, 1.2),
+        vy: rand(-10.5, -14.5),
+        targetY,
+        hue: rand(0, 360),
+        life: 0
+      });
+    }
+
+    function explode(x, y, hue) {
+      const count = Math.floor(rand(90, 180)); // HUGE burst
+      const spread = rand(5.2, 8.8);
+
+      for (let i = 0; i < count; i++) {
+        const a = rand(0, Math.PI * 2);
+        const s = rand(1.5, spread);
+        sparks.push({
+          x, y,
+          vx: Math.cos(a) * s,
+          vy: Math.sin(a) * s,
+          r: rand(1.4, 3.2),
+          hue: (hue + rand(-50, 50) + 360) % 360, // color variety within burst
+          alpha: 1,
+          fade: rand(0.010, 0.020),
+        });
+      }
+    }
+
+    function step() {
+      // trail/fade for nicer look
+      ctx.fillStyle = "rgba(0,0,0,0.12)";
+      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      // rockets
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.life++;
+
+        r.x += r.vx;
+        r.y += r.vy;
+
+        // slight gravity slows ascent
+        r.vy += 0.035;
+
+        // draw rocket
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = `hsl(${r.hue}, 95%, 70%)`;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // explode near target height or if slows too much
+        if (r.y <= r.targetY || r.vy > -2.0 || r.life > 120) {
+          explode(r.x, r.y, r.hue);
+          rockets.splice(i, 1);
+        }
+      }
+
+      // sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+
+        p.vx *= DRAG;
+        p.vy *= DRAG;
+        p.vy += GRAVITY;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        p.alpha -= p.fade;
+
+        if (p.alpha <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = clamp(p.alpha, 0, 1);
+        ctx.fillStyle = `hsl(${p.hue}, 95%, 65%)`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    // ---------- SHOW CONTROL ----------
+    // Make the screen *flood* with rockets for a while:
+    const SHOW_MS = 10000;      // how long the intense fireworks last
+    const ROCKETS_PER_TICK = 3; // increase for MORE
+    const TICK_MS = 120;        // lower for MORE
+
+    // Optional: if performance is laggy, reduce ROCKETS_PER_TICK to 2.
+
+    const start = performance.now();
+    const timer = setInterval(() => {
+      const elapsed = performance.now() - start;
+      if (elapsed > SHOW_MS) {
+        clearInterval(timer);
+        return;
+      }
+
+      // launch rockets across the screen
+      for (let i = 0; i < ROCKETS_PER_TICK; i++) {
+        launch(rand(0, window.innerWidth), rand(window.innerHeight * 0.10, window.innerHeight * 0.55));
+      }
+    }, TICK_MS);
+
+    // Start with a big opening barrage
+    for (let i = 0; i < 16; i++) launch(rand(0, window.innerWidth), rand(window.innerHeight * 0.10, window.innerHeight * 0.45));
+
+    // Click/tap: add an instant explosion + a few rockets
+    function boomAt(clientX, clientY) {
+      explode(clientX, clientY, rand(0, 360));
+      for (let i = 0; i < 4; i++) launch(rand(0, window.innerWidth), rand(window.innerHeight * 0.12, window.innerHeight * 0.55));
+    }
+
+    window.addEventListener("pointerdown", (e) => {
+      boomAt(e.clientX, e.clientY);
+    });
+
+    // make canvas background transparent over your page background
+    ctx.fillStyle = "rgba(0,0,0,0)";
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    step();
+  </script>
+</body>
+</html>

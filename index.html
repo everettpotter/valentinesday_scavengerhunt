@@ -19,7 +19,9 @@
     <!-- Text -->
     <h1>Lover's Lane Scavenger Hunt 2026</h1>
     <p class="message">
-      You’ve been handpicked out of <strong>7 billion people</strong><br />
+      Welcome, Sarah Strickland (aka prettiest girl in the world)!!! 
+    </p>
+    <p class="message">You've been handpicked out of <strong>7 billion people</strong><br />
       to embark on this scavenger hunt.
     </p>
     <p class="message">
@@ -28,7 +30,7 @@
 
     <!-- Buttons -->
     <div class="btn-row">
-      <button class="btn yes" onclick="window.location.href='valentine/'">
+      <button id="yesBtn" class="btn yes">
         Yes
       </button>
 
@@ -40,44 +42,170 @@
 
   <!-- Turn the No button into Yes -->
   <script>
-  const btn = document.getElementById("toggleBtn");
+document.addEventListener("DOMContentLoaded", () => {
+  const yesBtn = document.getElementById("yesBtn");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const goTo = "clue1/"; // change if needed
 
-  const triggerDistance = 120; // how close before it turns to Yes
-  let isYes = false;
+  function animateAndGo(sourceBtn, url) {
+    sourceBtn.classList.remove("popped");
+    void sourceBtn.offsetWidth;
+    sourceBtn.classList.add("popped");
+
+    for (let i = 0; i < 14; i++) spawnHeartFrom(sourceBtn);
+
+    setTimeout(() => window.location.href = url, 650);
+  }
+
+  function spawnHeartFrom(el) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = Math.random() > 0.5 ? "💖" : "💘";
+
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+
+    heart.style.left = (x + (Math.random() - 0.5) * 140) + "px";
+    heart.style.top  = (y + (Math.random() - 0.5) * 60) + "px";
+
+    document.body.appendChild(heart);
+    heart.addEventListener("animationend", () => heart.remove());
+  }
+
+  // YES button always animates
+  yesBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    animateAndGo(yesBtn, goTo);
+  });
+
+  // Proximity toggle for the NO button
+  const triggerDistance = 140;
+  let toggleIsYes = false;
 
   document.addEventListener("mousemove", (e) => {
-    const rect = btn.getBoundingClientRect();
+    const rect = toggleBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
 
-    const btnX = rect.left + rect.width / 2;
-    const btnY = rect.top + rect.height / 2;
-
-    const dx = e.clientX - btnX;
-    const dy = e.clientY - btnY;
-
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance < triggerDistance && !isYes) {
-      toYes();
-    } else if (distance >= triggerDistance && isYes) {
-      toNo();
-    }
+    if (dist < triggerDistance && !toggleIsYes) toYes();
+    if (dist >= triggerDistance && toggleIsYes) toNo();
   });
 
   function toYes() {
-    isYes = true;
-    btn.textContent = "Yes";
-    btn.classList.remove("no");
-    btn.classList.add("yes");
-    btn.onclick = () => window.location.href = "valentine/";
+    toggleIsYes = true;
+    toggleBtn.textContent = "Yes";
+    toggleBtn.classList.remove("no");
+    toggleBtn.classList.add("yes");
+
+    // when it is YES, clicking animates + redirects
+    toggleBtn.onclick = (e) => {
+      e.preventDefault();
+      animateAndGo(toggleBtn, goTo);
+    };
   }
 
   function toNo() {
-    isYes = false;
-    btn.textContent = "No";
-    btn.classList.remove("yes");
-    btn.classList.add("no");
-    btn.onclick = null;
+    toggleIsYes = false;
+    toggleBtn.textContent = "No";
+    toggleBtn.classList.remove("yes");
+    toggleBtn.classList.add("no");
+
+    // when it is NO, clicking does nothing
+    toggleBtn.onclick = null;
   }
+});
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const yesBtn = document.getElementById("yesBtn");
+  const toggleBtn = document.getElementById("toggleBtn");
+
+  const goTo = "clue1/"; // <-- change to "valentine/" if that's your next page
+
+  // --- fun animation helper ---
+  function animateAndGo(sourceBtn, url) {
+    // pop animation restart
+    sourceBtn.classList.remove("popped");
+    void sourceBtn.offsetWidth;
+    sourceBtn.classList.add("popped");
+
+    // hearts burst
+    for (let i = 0; i < 14; i++) spawnHeartFrom(sourceBtn);
+
+    // navigate after animation is visible
+    setTimeout(() => {
+      window.location.href = url;
+    }, 650);
+  }
+
+  function spawnHeartFrom(el) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = Math.random() > 0.5 ? "💖" : "💘";
+
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+
+    heart.style.left = (x + (Math.random() - 0.5) * 140) + "px";
+    heart.style.top  = (y + (Math.random() - 0.5) * 60) + "px";
+
+    document.body.appendChild(heart);
+    heart.addEventListener("animationend", () => heart.remove());
+  }
+
+  // Main Yes button click animation
+  if (yesBtn) {
+    yesBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      animateAndGo(yesBtn, goTo);
+    });
+  }
+
+  // --- Your "No turns to Yes when close" logic ---
+  const triggerDistance = 140;
+  let toggleIsYes = false;
+
+  document.addEventListener("mousemove", (e) => {
+    if (!toggleBtn) return;
+
+    const rect = toggleBtn.getBoundingClientRect();
+    const btnX = rect.left + rect.width / 2;
+    const btnY = rect.top + rect.height / 2;
+
+    const distance = Math.hypot(e.clientX - btnX, e.clientY - btnY);
+
+    if (distance < triggerDistance && !toggleIsYes) toYes();
+    if (distance >= triggerDistance && toggleIsYes) toNo();
+  });
+
+  function toYes() {
+    toggleIsYes = true;
+    toggleBtn.textContent = "Yes";
+    toggleBtn.classList.remove("no");
+    toggleBtn.classList.add("yes");
+
+    // ✅ When it is "Yes" and clicked, do the SAME animation + redirect
+    toggleBtn.onclick = (e) => {
+      e.preventDefault();
+      animateAndGo(toggleBtn, goTo);
+    };
+  }
+
+  function toNo() {
+    toggleIsYes = false;
+    toggleBtn.textContent = "No";
+    toggleBtn.classList.remove("yes");
+    toggleBtn.classList.add("no");
+
+    // disable click when it's "No"
+    toggleBtn.onclick = null;
+  }
+});
 </script>
 
 

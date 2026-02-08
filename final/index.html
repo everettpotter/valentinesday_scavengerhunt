@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Question</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body class="final">
+  <main class="card">
+    <h1 class="big">I love you, Sarah!</h1>
+    <p class="sub">You made it to the end of the scavenger hunt! Wooooooooo!</p>
+
+    <div class="riddle" style="margin-top: 14px;">
+      <p style="margin: 0;">
+        There are thousands of miles and millions of fish in the sea between us, but I only want you to be mine.
+      </p>
+    </div>
+
+    <p class="message" style="margin-top: 14px;">
+      <strong>Will you be my Valentine?</strong>
+    </p>
+
+    <div class="btn-row" style="margin-top: 20px;">
+      <button id="yesBtn" class="btn yes">YES</button>
+      <button id="noBtn" class="btn no">No :(</button>
+    </div>
+
+    <p id="tinyText" class="tiny" style="margin-top: 14px;">
+      Choose wisely :)
+    </p>
+
+  </main>
+
+  <script>
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn  = document.getElementById("noBtn");
+
+  const yesUrl = "../yay/"; // where YES goes
+
+  // --- heart animation helpers ---
+  function animateHearts(sourceBtn) {
+    sourceBtn.classList.remove("popped");
+    void sourceBtn.offsetWidth;
+    sourceBtn.classList.add("popped");
+    for (let i = 0; i < 18; i++) spawnHeartFrom(sourceBtn);
+  }
+
+  function spawnHeartFrom(el) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = Math.random() > 0.5 ? "💖" : "💘";
+
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+
+    heart.style.left = (x + (Math.random() - 0.5) * 180) + "px";
+    heart.style.top  = (y + (Math.random() - 0.5) * 80) + "px";
+
+    document.body.appendChild(heart);
+    heart.addEventListener("animationend", () => heart.remove());
+  }
+
+  function animateHeartsAndGo(sourceBtn, url) {
+    animateHearts(sourceBtn);
+    setTimeout(() => window.location.href = url, 750);
+  }
+
+  // YES: hearts + go
+  yesBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    animateHeartsAndGo(yesBtn, yesUrl);
+  });
+
+  // NO: runaway 
+  noBtn.addEventListener("mouseenter", moveNoBtn);
+
+  function moveNoBtn() {
+    const padding = 20;
+    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+    const x = Math.max(padding, Math.random() * maxX);
+    const y = Math.max(padding, Math.random() * maxY);
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+  }
+</script>
+
+</body>
+</html>
